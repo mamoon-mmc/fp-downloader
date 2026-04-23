@@ -15,7 +15,7 @@ A Chrome extension that allows you to download Freepik images at specified width
 
 1. **Clone or Download the Repository**
    ```bash
-   git clone https://github.com/yourusername/freepik-downloader.git
+   git clone https://github.com/mamoon-mmc/fp-downloader
    cd freepik-downloader
    ```
 
