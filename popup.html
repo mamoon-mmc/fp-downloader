@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Freepik Downloader</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@600;700;800&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0e10;
+      --surface: #1a1a1f;
+      --surface2: #242429;
+      --border: #2e2e38;
+      --accent: #ff6b35;
+      --accent2: #ff9f1c;
+      --text: #f0ede8;
+      --muted: #7a7a8c;
+      --success: #4ade80;
+      --radius: 10px;
+    }
+
+    body {
+      width: 300px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #1a1a1f 0%, #0e0e10 100%);
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -20px; right: -20px;
+      width: 100px; height: 100px;
+      background: radial-gradient(circle, rgba(255,107,53,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .logo {
+      width: 28px; height: 28px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.3px;
+    }
+
+    .tagline {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .body {
+      padding: 16px 20px;
+    }
+
+    .section-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .size-options {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .size-btn {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      width: 100%;
+      text-align: left;
+    }
+
+    .size-btn:hover {
+      background: var(--surface2);
+      border-color: var(--accent);
+      transform: translateX(2px);
+    }
+
+    .size-btn.active {
+      border-color: var(--accent);
+      background: rgba(255,107,53,0.08);
+    }
+
+    .size-btn .label {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .size-btn .badge {
+      font-size: 10px;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+
+    .size-btn.active .badge {
+      background: rgba(255,107,53,0.2);
+      color: var(--accent);
+    }
+
+    .custom-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      transition: border-color 0.15s;
+    }
+
+    .custom-section.focused {
+      border-color: var(--accent);
+    }
+
+    .custom-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .custom-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .custom-input {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 7px 10px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .custom-input:focus {
+      border-color: var(--accent);
+    }
+
+    .custom-input::placeholder { color: var(--muted); }
+
+    .px-label {
+      font-size: 11px;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .download-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      border: none;
+      border-radius: var(--radius);
+      padding: 12px;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .download-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0);
+      transition: background 0.15s;
+    }
+
+    .download-btn:hover::before { background: rgba(255,255,255,0.08); }
+    .download-btn:active { transform: scale(0.98); }
+    .download-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .status-bar {
+      margin-top: 12px;
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+      transition: background 0.3s;
+    }
+
+    .status-dot.active { background: var(--accent); animation: pulse 1.2s ease infinite; }
+    .status-dot.success { background: var(--success); animation: none; }
+    .status-dot.error { background: #f87171; animation: none; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    .status-text {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .status-text.success { color: var(--success); }
+    .status-text.error { color: #f87171; }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 14px 0;
+    }
+
+    .format-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .format-select {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .format-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+    }
+
+    .format-dropdown {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+
+    .format-dropdown:hover {
+      border-color: var(--accent);
+      background: var(--surface2);
+    }
+
+    .format-dropdown:focus {
+      border-color: var(--accent);
+      background: var(--surface2);
+    }
+
+    .format-dropdown option {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .compression-container {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 16px;
+    }
+
+    .compression-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .compression-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--muted);
+    }
+
+    .compression-value {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .compression-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--surface2);
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+
+    .compression-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      cursor: pointer;
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+      transition: all 0.15s ease;
+    }
+
+    .compression-slider::-webkit-slider-thumb:hover {
+      box-shadow: 0 0 0 5px rgba(255, 107, 53, 0.3);
+    }
+
+    .compression-slider::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      cursor: pointer;
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.2);
+      transition: all 0.15s ease;
+    }
+
+    .compression-slider::-moz-range-thumb:hover {
+      box-shadow: 0 0 0 5px rgba(255, 107, 53, 0.3);
+    }
+
+    .compression-info {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">⬇</div>
+      <div>
+        <h1>Freepik DL</h1>
+      </div>
+    </div>
+    <div class="tagline">Image Batch Downloader</div>
+  </div>
+
+  <div class="body">
+    <div class="section-label">Select Width</div>
+
+    <div class="size-options">
+      <button class="size-btn active" data-width="740" id="btn-740">
+        <span class="label">Standard</span>
+        <span class="badge">740px</span>
+      </button>
+      <button class="size-btn" data-width="1060" id="btn-1060">
+        <span class="label">High Res</span>
+        <span class="badge">1060px</span>
+      </button>
+    </div>
+
+    <div class="custom-section" id="custom-section">
+      <div class="custom-label">Custom Width</div>
+      <div class="custom-row">
+        <input
+          type="number"
+          class="custom-input"
+          id="custom-input"
+          placeholder="e.g. 1480"
+          min="1"
+          max="9999"
+        />
+        <span class="px-label">px</span>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- <div class="section-label">Format & Compression</div> -->
+
+    <div class="format-options">
+      <div class="format-select">
+        <label for="format-select" class="format-label">Format</label>
+        <select id="format-select" class="format-dropdown">
+          <option value="webp">WEBP (Modern)</option>
+          <option value="jpg">JPG (Compatible)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="compression-container">
+      <div class="compression-header">
+        <label for="compression-slider" class="compression-label">Compression Level</label>
+        <span class="compression-value"><span id="compression-value">80</span>%</span>
+      </div>
+      <input
+        type="range"
+        id="compression-slider"
+        class="compression-slider"
+        min="0"
+        max="100"
+        value="80"
+        step="5"
+      />
+      <div class="compression-info">
+        <span id="compression-info-text">Balanced quality and file size</span>
+      </div>
+    </div>
+
+    <button class="download-btn" id="download-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Download Images
+    </button>
+
+    <div class="status-bar">
+      <div class="status-dot" id="status-dot"></div>
+      <div class="status-text" id="status-text">Ready — select a width and click download</div>
+    </div>
+    <div class="divider"></div>
+    <div class="status-bar" style="text-align: center;">
+      <div class="status-text" style="text-align: center; width: 100%;" id="status-text">Developed By MMB</div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
