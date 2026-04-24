@@ -2,23 +2,60 @@
   let selectedWidth = 740;
   let selectedFormat = 'webp';
   let selectedCompression = 80;
+  let currentTheme = 'dark';
+  let bulkModeActive = false;
 
   const btn740 = document.getElementById('btn-740');
   const btn1060 = document.getElementById('btn-1060');
   const customInput = document.getElementById('custom-input');
   const customSection = document.getElementById('custom-section');
   const downloadBtn = document.getElementById('download-btn');
+  const bulkSelectBtn = document.getElementById('bulk-select-btn');
   const statusDot = document.getElementById('status-dot');
   const statusText = document.getElementById('status-text');
   const formatSelect = document.getElementById('format-select');
   const compressionSlider = document.getElementById('compression-slider');
   const compressionValue = document.getElementById('compression-value');
   const compressionInfoText = document.getElementById('compression-info-text');
+  const themeToggle = document.getElementById('theme-toggle');
 
   function setStatus(msg, type = 'idle') {
     statusText.textContent = msg;
     statusText.className = 'status-text' + (type !== 'idle' ? ` ${type}` : '');
     statusDot.className = 'status-dot' + (type === 'loading' ? ' active' : type === 'success' ? ' success' : type === 'error' ? ' error' : '');
+  }
+
+  function initTheme() {
+    // Try to load saved theme preference
+    const savedTheme = localStorage.getItem('freepikTheme');
+    if (savedTheme) {
+      currentTheme = savedTheme;
+    } else {
+      // Check system preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      currentTheme = prefersDark ? 'dark' : 'light';
+    }
+    applyTheme(currentTheme);
+  }
+
+  function applyTheme(theme) {
+    const html = document.documentElement;
+    html.setAttribute('data-theme', theme);
+    currentTheme = theme;
+    localStorage.setItem('freepikTheme', theme);
+    updateThemeIcon();
+  }
+
+  function toggleTheme() {
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    applyTheme(newTheme);
+  }
+
+  function updateThemeIcon() {
+    if (themeToggle) {
+      themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+      themeToggle.title = currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    }
   }
 
   function loadSettings() {
@@ -28,6 +65,7 @@
     }
     
     chrome.storage.local.get({
+      width: 740,
       format: 'webp',
       compression: 80
     }, (items) => {
@@ -35,13 +73,37 @@
         console.error('Failed to load settings:', chrome.runtime.lastError);
         return;
       }
+      selectedWidth = items.width || 740;
       selectedFormat = items.format || 'webp';
       selectedCompression = items.compression || 80;
+      setActiveBtn(selectedWidth);
       formatSelect.value = selectedFormat;
       compressionSlider.value = selectedCompression;
       updateCompressionDisplay();
     });
   }
+
+  // ── Settings provider for content script ──────────────────────────────────
+  // content.js asks for current popup settings before bulk download
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    if (message.action === 'fpk_getSettings') {
+      sendResponse({
+        width: selectedWidth,
+        format: selectedFormat,
+        compression: selectedCompression
+      });
+      return true;
+    }
+    // User exited bulk mode from the page (✕ button on floating bar)
+    if (message.action === 'fpk_bulkModeExited') {
+      bulkModeActive = false;
+      syncBulkBtn();
+    }
+  });
+
+  // Initialize theme
+  initTheme();
+  themeToggle.addEventListener('click', toggleTheme);
 
   function updateCompressionDisplay() {
     compressionValue.textContent = selectedCompression;
@@ -75,6 +137,7 @@
     selectedWidth = 740;
     customInput.value = '';
     setActiveBtn(740);
+    if (chrome && chrome.storage) chrome.storage.local.set({ width: 740 });
     setStatus('Ready — width set to 740px');
   });
 
@@ -82,6 +145,7 @@
     selectedWidth = 1060;
     customInput.value = '';
     setActiveBtn(1060);
+    if (chrome && chrome.storage) chrome.storage.local.set({ width: 1060 });
     setStatus('Ready — width set to 1060px');
   });
 
@@ -99,6 +163,7 @@
       selectedWidth = val;
       btn740.classList.remove('active');
       btn1060.classList.remove('active');
+      if (chrome && chrome.storage) chrome.storage.local.set({ width: val });
       setStatus(`Ready — width set to ${val}px`);
     }
   });
@@ -119,6 +184,54 @@
     updateCompressionDisplay();
     setStatus(`Ready — compression set to ${selectedCompression}%`);
   });
+
+  // ── Bulk select toggle ────────────────────────────────────────────────────
+  function syncBulkBtn() {
+    if (!bulkSelectBtn) return;
+    if (bulkModeActive) {
+      bulkSelectBtn.classList.add('active');
+      bulkSelectBtn.querySelector('.bulk-btn-label').textContent = 'Exit Select Mode';
+    } else {
+      bulkSelectBtn.classList.remove('active');
+      bulkSelectBtn.querySelector('.bulk-btn-label').textContent = 'Bulk Select Mode';
+    }
+  }
+
+  if (bulkSelectBtn) {
+    bulkSelectBtn.addEventListener('click', async () => {
+      try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        chrome.tabs.sendMessage(tab.id, { action: 'fpk_toggleBulkMode' }, (resp) => {
+          if (chrome.runtime.lastError) {
+            setStatus('Reload the Freepik page first.', 'error');
+            return;
+          }
+          bulkModeActive = resp?.active ?? !bulkModeActive;
+          syncBulkBtn();
+          setStatus(
+            bulkModeActive
+              ? '✓ Bulk select active — check images on page'
+              : 'Bulk select mode off',
+            bulkModeActive ? 'success' : 'idle'
+          );
+        });
+      } catch (err) {
+        setStatus('Error: ' + err.message, 'error');
+      }
+    });
+  }
+
+  // On popup open: sync bulk-mode state from content script
+  (async () => {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      chrome.tabs.sendMessage(tab.id, { action: 'fpk_getBulkModeState' }, (resp) => {
+        if (chrome.runtime.lastError) return; // page not loaded yet — ok
+        bulkModeActive = resp?.active ?? false;
+        syncBulkBtn();
+      });
+    } catch (_) { /* ignore */ }
+  })();
 
   downloadBtn.addEventListener('click', async () => {
     const customVal = parseInt(customInput.value, 10);

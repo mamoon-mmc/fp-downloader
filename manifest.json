@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Freepik Image Downloader",
-  "version": "1.0.0",
-  "description": "Download Freepik images at specified widths with one click.",
+  "version": "2.0.0",
+  "description": "Download Freepik images with dark mode support and bulk downloading capabilities.",
   "permissions": [
     "activeTab",
     "scripting",
@@ -30,8 +30,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ]

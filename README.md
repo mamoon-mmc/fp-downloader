@@ -1,11 +1,19 @@
 # Freepik Image Downloader
 
-A Chrome extension that allows you to download Freepik images at specified widths with just one click.
+A Chrome extension that lets you download Freepik images with one click — now with **Dark Mode** and a **Bulk Downloader**.
+
+## What's New in v2.0
+
+- 🌙 **Dark Mode** — Toggle between light and dark themes for a comfortable experience
+- 📦 **Bulk Downloader** — Download multiple images at once from any Freepik page
+- ⚡ Improved performance and stability
 
 ## Features
 
 - 🖼️ Download images directly from Freepik
 - 📐 Specify custom image widths
+- 🌙 Dark mode support
+- 📦 Bulk download multiple images at once
 - ⚡ One-click downloading
 - 🛡️ Secure and easy to use
 
@@ -15,7 +23,7 @@ A Chrome extension that allows you to download Freepik images at specified width
 
 1. **Clone or Download the Repository**
    ```bash
-   git clone https://github.com/mamoon-mmc/fp-downloader
+   git clone https://github.com/yourusername/freepik-downloader.git
    cd freepik-downloader
    ```
 
@@ -28,7 +36,7 @@ A Chrome extension that allows you to download Freepik images at specified width
 
 4. **Load the Extension**
    - Click **Load unpacked**
-   - Select the `freepik-downloader` folder from your computer
+   - Select the `freepik-downloader-v2` folder from your computer
    - The extension will now appear in your extensions list
 
 5. **Verify Installation**
@@ -40,22 +48,25 @@ Currently, this extension is not available on the Chrome Web Store. Follow Metho
 
 ## Usage
 
-1. **Open the Extension**
-   - Click the extension icon in your Chrome toolbar
-   - A popup will appear with download options
+### Single Download
+1. **Open the Extension** — Click the extension icon in your Chrome toolbar
+2. **Specify Image Width** — Enter your desired image width in pixels
+3. **Download** — Click the download button; your image saves to your Downloads folder
 
-2. **Specify Image Width**
-   - Enter your desired image width in pixels
-   - The extension will adjust the download accordingly
+### Bulk Download
+1. **Open the Extension** — Click the extension icon in your Chrome toolbar
+2. **Switch to Bulk Mode** — Click the **Bulk Download** tab
+3. **Select Images** — Choose the images you want to download from the page
+4. **Download All** — Click **Download All** to save selected images at once
 
-3. **Download**
-   - Click the download button
-   - Your image will be saved to your default Downloads folder
+### Dark Mode
+- Click the **🌙 / ☀️** toggle in the extension popup to switch between dark and light themes
+- Your preference is saved automatically across sessions
 
 ## Project Structure
 
 ```
-freepik-downloader/
+freepik-downloader-v2/
 ├── manifest.json          # Extension configuration
 ├── background.js          # Background service worker
 ├── content.js             # Content script for page interaction
@@ -75,7 +86,7 @@ This extension uses the following permissions:
 - **activeTab**: Access to the current tab information
 - **scripting**: Execute scripts in web pages
 - **downloads**: Download and manage files
-- **storage**: Store user preferences
+- **storage**: Store user preferences (including dark mode setting)
 - **host_permissions**: Access all websites to detect and download images
 
 ## Troubleshooting
@@ -83,12 +94,17 @@ This extension uses the following permissions:
 ### Extension doesn't appear after installation
 - Make sure you're in the correct folder when selecting "Load unpacked"
 - Verify Developer mode is enabled
-- Refresh the extensions page (Ctrl+R or Cmd+R)
+- Refresh the extensions page (Ctrl+R)
 
 ### Downloads not working
 - Check your browser's download settings
 - Ensure pop-ups are not blocked for Freepik
 - Verify you have write permissions to your Downloads folder
+
+### Bulk download not picking up images
+- Make sure you're on a Freepik browse/search page (not a single asset page)
+- Scroll down to load more images before triggering bulk download
+- Try refreshing the page and re-opening the extension
 
 ### Images not downloading properly
 - Make sure you're on a Freepik page
@@ -103,10 +119,16 @@ To modify the extension:
 2. Reload the extension: Visit `chrome://extensions/` and click the reload button
 3. Test your changes
 
-## Version
+## Changelog
 
-- **Current Version**: 1.0.0
-- **Last Updated**: 2026
+### v2.0.0 — 2026
+- ✨ Added **Dark Mode** with persistent preference storage
+- ✨ Added **Bulk Downloader** to download multiple images at once
+- 🐛 Various bug fixes and performance improvements
+
+### v1.0.0 — 2026
+- 🎉 Initial release
+- Single image download with custom width support
 
 ## License
 
@@ -117,7 +139,7 @@ This project is provided as-is for personal use.
 If you encounter any issues:
 1. Check the troubleshooting section above
 2. Review the GitHub issues page
-3. Ensure you have the latest version
+3. Ensure you have the latest version (v2.0.0)
 
 ---
 
