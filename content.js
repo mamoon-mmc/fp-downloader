@@ -413,14 +413,15 @@
     if (selectedFigures.size === 0) return;
 
     // Read settings from storage — works even when the popup is closed
-    let width = 740, format = 'webp', compression = 80;
+    let width = 740, format = 'webp', compression = 80, zipMode = false;
     try {
       const settings = await new Promise((resolve) => {
-        chrome.storage.local.get({ width: 740, format: 'webp', compression: 80 }, resolve);
+        chrome.storage.local.get({ width: 740, format: 'webp', compression: 80, zipMode: false }, resolve);
       });
       width       = settings.width       || 740;
       format      = settings.format      || 'webp';
       compression = settings.compression || 80;
+      zipMode     = settings.zipMode     ?? false;
     } catch (_) { /* use defaults */ }
 
     const images = collectSelectedImages(width);
@@ -433,7 +434,7 @@
     if (statusEl) statusEl.textContent = `Downloading ${images.length}…`;
 
     chrome.runtime.sendMessage(
-      { action: 'downloadImages', images, width, format, compression, zip: true },
+      { action: 'downloadImages', images, width, format, compression, zip: zipMode },
       (response) => {
         if (response && response.success) {
           if (statusEl) statusEl.textContent = `✓ ${response.count} done`;

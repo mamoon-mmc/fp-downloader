@@ -274,6 +274,7 @@
       gap: 8px;
       position: relative;
       overflow: hidden;
+      margin-bottom: 10px;
     }
 
     .download-btn::before {
@@ -492,6 +493,81 @@
       color: var(--muted);
       letter-spacing: 0.5px;
     }
+
+    /* ── ZIP checkbox ─────────────────────────────────────────── */
+    .zip-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 9px 14px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+
+    .zip-option:hover {
+      background: var(--surface2);
+      border-color: var(--accent);
+    }
+
+    .zip-option input[type="checkbox"] {
+      display: none;
+    }
+
+    .zip-toggle {
+      width: 32px;
+      height: 18px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .zip-toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: transform 0.2s ease, background 0.2s;
+    }
+
+    .zip-option.checked .zip-toggle {
+      background: rgba(255, 107, 53, 0.25);
+      border-color: var(--accent);
+    }
+
+    .zip-option.checked .zip-toggle::after {
+      transform: translateX(14px);
+      background: var(--accent);
+    }
+
+    .zip-option-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .zip-option-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .zip-option-hint {
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.3px;
+    }
   </style>
 </head>
 <body>
@@ -570,11 +646,6 @@
       </div>
     </div>
 
-    <button class="bulk-select-btn" id="bulk-select-btn">
-      <span class="bulk-icon">🗹</span>
-      <span class="bulk-btn-label">Bulk Select Mode</span>
-    </button>
-
     <button class="download-btn" id="download-btn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -583,6 +654,20 @@
       </svg>
       Download Images
     </button>
+
+    <button class="bulk-select-btn" id="bulk-select-btn">
+      <span class="bulk-icon">🗹</span>
+      <span class="bulk-btn-label">Bulk Select Mode</span>
+    </button>
+
+    <label class="zip-option" id="zip-option" for="zip-checkbox">
+      <input type="checkbox" id="zip-checkbox" />
+      <div class="zip-toggle"></div>
+      <div class="zip-option-text">
+        <span class="zip-option-label">📦 Download as ZIP</span>
+        <!-- <span class="zip-option-hint">Bundle all images into a single .zip file</span> -->
+      </div>
+    </label>
 
     <div class="status-bar">
       <div class="status-dot" id="status-dot"></div>

@@ -6,14 +6,18 @@ A Chrome extension that lets you download Freepik images with one click — now 
 
 - 🌙 **Dark Mode** — Toggle between light and dark themes for a comfortable experience
 - 📦 **Bulk Downloader** — Download multiple images at once from any Freepik page
+- 🗜️ **Format & Compression** — Choose between WEBP and JPG, and adjust compression levels
+- 🗂️ **ZIP Export** — Optionally bundle bulk downloads into a single convenient ZIP file
 - ⚡ Improved performance and stability
 
 ## Features
 
 - 🖼️ Download images directly from Freepik
 - 📐 Specify custom image widths
+- 🗜️ Choose output format (WEBP/JPG) and compression level
 - 🌙 Dark mode support
 - 📦 Bulk download multiple images at once
+- 🗂️ Option to bundle bulk downloads into a single ZIP file
 - ⚡ One-click downloading
 - 🛡️ Secure and easy to use
 
@@ -23,8 +27,8 @@ A Chrome extension that lets you download Freepik images with one click — now 
 
 1. **Clone or Download the Repository**
    ```bash
-   git clone https://github.com/yourusername/freepik-downloader.git
-   cd freepik-downloader
+   git clone https://github.com/mamoon-mmc/fp-downloader
+   cd fp-downloader
    ```
 
 2. **Open Chrome Extensions Page**
@@ -55,9 +59,11 @@ Currently, this extension is not available on the Chrome Web Store. Follow Metho
 
 ### Bulk Download
 1. **Open the Extension** — Click the extension icon in your Chrome toolbar
-2. **Switch to Bulk Mode** — Click the **Bulk Download** tab
-3. **Select Images** — Choose the images you want to download from the page
-4. **Download All** — Click **Download All** to save selected images at once
+2. **Format & Settings** — Adjust your desired width, format (WEBP/JPG), and compression level
+3. **Switch to Bulk Mode** — Click the **Bulk Select Mode** button
+4. **Select Images** — Click on the images you want to download on the page
+5. **ZIP Option** — Toggle **Download as ZIP** if you want them bundled into one file
+6. **Download All** — Click **Download Selected** in the floating bar on the page
 
 ### Dark Mode
 - Click the **🌙 / ☀️** toggle in the extension popup to switch between dark and light themes
@@ -124,6 +130,8 @@ To modify the extension:
 ### v2.0.0 — 2026
 - ✨ Added **Dark Mode** with persistent preference storage
 - ✨ Added **Bulk Downloader** to download multiple images at once
+- ✨ Added **Format Selection** (WEBP/JPG) and **Compression Level** controls
+- ✨ Added **Download as ZIP** option for bulk downloads
 - 🐛 Various bug fixes and performance improvements
 
 ### v1.0.0 — 2026

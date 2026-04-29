@@ -4,6 +4,7 @@
   let selectedCompression = 80;
   let currentTheme = 'dark';
   let bulkModeActive = false;
+  let zipMode = false;
 
   const btn740 = document.getElementById('btn-740');
   const btn1060 = document.getElementById('btn-1060');
@@ -18,6 +19,8 @@
   const compressionValue = document.getElementById('compression-value');
   const compressionInfoText = document.getElementById('compression-info-text');
   const themeToggle = document.getElementById('theme-toggle');
+  const zipCheckbox = document.getElementById('zip-checkbox');
+  const zipOption   = document.getElementById('zip-option');
 
   function setStatus(msg, type = 'idle') {
     statusText.textContent = msg;
@@ -67,7 +70,8 @@
     chrome.storage.local.get({
       width: 740,
       format: 'webp',
-      compression: 80
+      compression: 80,
+      zipMode: false
     }, (items) => {
       if (chrome.runtime.lastError) {
         console.error('Failed to load settings:', chrome.runtime.lastError);
@@ -76,11 +80,19 @@
       selectedWidth = items.width || 740;
       selectedFormat = items.format || 'webp';
       selectedCompression = items.compression || 80;
+      zipMode = items.zipMode ?? false;
       setActiveBtn(selectedWidth);
       formatSelect.value = selectedFormat;
       compressionSlider.value = selectedCompression;
       updateCompressionDisplay();
+      syncZipCheckbox();
     });
+  }
+
+  function syncZipCheckbox() {
+    if (!zipCheckbox || !zipOption) return;
+    zipCheckbox.checked = zipMode;
+    zipOption.classList.toggle('checked', zipMode);
   }
 
   // ── Settings provider for content script ──────────────────────────────────
@@ -104,6 +116,16 @@
   // Initialize theme
   initTheme();
   themeToggle.addEventListener('click', toggleTheme);
+
+  // ── ZIP checkbox toggle ───────────────────────────────────────────────────
+  if (zipCheckbox) {
+    zipCheckbox.addEventListener('change', () => {
+      zipMode = zipCheckbox.checked;
+      syncZipCheckbox();
+      if (chrome && chrome.storage) chrome.storage.local.set({ zipMode });
+      setStatus(zipMode ? 'ZIP mode on — images will be bundled' : 'ZIP mode off — individual files', 'idle');
+    });
+  }
 
   function updateCompressionDisplay() {
     compressionValue.textContent = selectedCompression;
@@ -275,7 +297,7 @@
 
       // Send to background for downloading
       chrome.runtime.sendMessage(
-        { action: 'downloadImages', images: imageData.urls, width: selectedWidth, format: selectedFormat, compression: selectedCompression },
+        { action: 'downloadImages', images: imageData.urls, width: selectedWidth, format: selectedFormat, compression: selectedCompression, zip: zipMode },
         (response) => {
           if (response && response.success) {
             setStatus(`✓ Downloaded ${response.count} image(s) at ${selectedWidth}px`, 'success');
